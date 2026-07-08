@@ -1,0 +1,13 @@
+{
+  "name": "standmark",
+  "version": "1.0.0",
+  "description": "Async daily standup tool for remote teams",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "Ammar",
+  "license": "ISC",
+  "type": "commonjs"
+}
