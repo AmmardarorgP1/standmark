@@ -5,7 +5,7 @@ const authService = require('../services/authService');
 
 const signup = async(req,res,next)=>{
     try{
-        const result = await authService.signUp(req.body);
+        const result = await authService.signup(req.body);
         res.status(201).json(
             {
                 success:true,
@@ -20,5 +20,5 @@ const signup = async(req,res,next)=>{
 };
 
 
-module.exports = {signUp};
+module.exports = {signup};
 

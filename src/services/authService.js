@@ -1,8 +1,8 @@
-const User = required('../models/User');
+const User = require('../models/User');
 
 
 
-const signUp = async ({name,email,password})=>{
+const signup = async ({name,email,password})=>{
 
 
     const existingUser = await User.findOne({email});
@@ -25,4 +25,4 @@ const signUp = async ({name,email,password})=>{
 };
 
 
-module.exports = {signUp};
+module.exports = {signup};
