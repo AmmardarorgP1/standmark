@@ -1,4 +1,5 @@
 const User = require('../models/User');
+const {generateAccessToken} = require('../utils/generateToken');
 
 
 
@@ -25,4 +26,36 @@ const signup = async ({name,email,password})=>{
 };
 
 
-module.exports = {signup};
+const login = async({email,password})=>{
+    const user = await User.findOne({email});
+    if(!user)
+    {
+        const error = new Error('Invalid email or password');
+        error.statusCode = 401;
+        throw error;
+    }
+
+    const isMatch = await user.comparePassword(password); 
+
+    if(!isMatch)
+    {
+        const error = new Error('Invalid email or password');
+        error.statusCode = 401;
+        throw error;
+    }
+    const accessToken = generateAccessToken(user._id);
+
+    return {
+        accessToken,
+        user:{
+            id: user._id,
+            name : user.name,
+            email : user.email,
+        },
+
+    };
+};
+
+
+
+module.exports = {signup,login};
