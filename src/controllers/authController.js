@@ -39,5 +39,26 @@ const login = async(req,res,next)=>
 };
 
 
-module.exports = {signup,login};
+const getMe = async(req,res,next)=>
+{
+    try
+    {
+        res.status(200).json({
+            success: true,
+            data:{
+                user:req.user
+            },
+
+        });
+        
+    }
+    catch(error)
+    {
+        next(error);
+    }
+
+}
+
+
+module.exports = {signup,login,getMe};
 
