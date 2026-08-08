@@ -11,4 +11,14 @@ const generateAccessToken = (userId)=>{
 };
 
 
-module.exports = {generateAccessToken};
+const generateRefreshToken = (userId)=>{
+     
+    return jwt.sign(
+      {userId},
+      process.env.JWT_REFRESH_SECRET,
+      {expiresIn: '7d'}
+    );
+};
+
+
+module.exports = {generateAccessToken,generateRefreshToken};

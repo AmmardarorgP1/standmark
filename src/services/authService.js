@@ -1,5 +1,6 @@
 const User = require('../models/User');
-const {generateAccessToken} = require('../utils/generateToken');
+const RefreshToken = require('../models/refreshToken');
+const {generateAccessToken, generateRefreshToken} = require('../utils/generateToken');
 
 
 
@@ -44,9 +45,19 @@ const login = async({email,password})=>{
         throw error;
     }
     const accessToken = generateAccessToken(user._id);
+    const refreshToken = generateRefreshToken(user._id);
+
+    await RefreshToken.create(
+        {
+            token:refreshToken,
+            user:user._id,
+            expiresAt:new Date(Date.now()+7*24*60*60*1000),  // in ms time  
+        }
+    );
 
     return {
         accessToken,
+        refreshToken,
         user:{
             id: user._id,
             name : user.name,
