@@ -67,7 +67,7 @@ const login = async ({ email, password }) => {
 
 
 const refresh = async (refreshToken) => {
- 
+
     if (!refreshToken) {
         const error = new Error('Refresh token required');
         error.statusCode = 401;
@@ -128,4 +128,22 @@ const refresh = async (refreshToken) => {
 
 
 
-module.exports = { signup, login, refresh };
+
+const logout = async(refreshToken)=>
+{
+    if(!refreshToken)
+    {
+        const error = new Error("Refresh Token required");
+        error.statusCode = 400;
+        throw error;
+    }
+
+    await RefreshToken.deleteOne({token: refreshToken});
+
+
+    return {message : 'Logged out successfully'};
+}
+
+
+
+    module.exports = { signup, login, logout , refresh };

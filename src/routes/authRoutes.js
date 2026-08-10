@@ -12,6 +12,8 @@ router.get('/me',protect,authController.getMe);
 
 router.post('/refresh',authController.refresh);
 
+router.post('/logout',authController.logout);
+
 
 
 
