@@ -5,7 +5,7 @@ const generateAccessToken = (userId)=>{
     return jwt.sign(                          //jwt.sign(payload, secret, options)
         {userId},
         process.env.JWT_SECRET,
-        {expiresIn:'15min'}
+        {expiresIn:'15m'}
 
     );
 };

@@ -60,5 +60,25 @@ const getMe = async(req,res,next)=>
 }
 
 
-module.exports = {signup,login,getMe};
+const refresh  = async(req,res,next)=>
+{
+    try
+    {
+        const result = await authService.refresh(req.body.refreshToken);
+        res.status(200).json({
+
+            success:true,
+            message:"Token refreshed",
+            data: result
+        });
+
+    }catch(error)
+    {
+        next(error);
+    }
+
+}
+
+
+module.exports = {signup,login,getMe,refresh };
 

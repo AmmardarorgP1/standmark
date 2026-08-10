@@ -1,23 +1,23 @@
 const User = require('../models/User');
 const RefreshToken = require('../models/refreshToken');
-const {generateAccessToken, generateRefreshToken} = require('../utils/generateToken');
+const jwt = require('jsonwebtoken');
+const { generateAccessToken, generateRefreshToken } = require('../utils/generateToken');
 
 
 
-const signup = async ({name,email,password})=>{
+const signup = async ({ name, email, password }) => {
 
 
-    const existingUser = await User.findOne({email});
+    const existingUser = await User.findOne({ email });
 
-    if(existingUser)
-    {
+    if (existingUser) {
         const error = new Error('Email already registered');
         error.statusCode = 409;   // shows conflict in registration
         throw error;
     }
 
 
-    const user = await User.create({name,email,password});
+    const user = await User.create({ name, email, password });
 
     return {
         id: user._id,
@@ -27,19 +27,17 @@ const signup = async ({name,email,password})=>{
 };
 
 
-const login = async({email,password})=>{
-    const user = await User.findOne({email});
-    if(!user)
-    {
+const login = async ({ email, password }) => {
+    const user = await User.findOne({ email });
+    if (!user) {
         const error = new Error('Invalid email or password');
         error.statusCode = 401;
         throw error;
     }
 
-    const isMatch = await user.comparePassword(password); 
+    const isMatch = await user.comparePassword(password);
 
-    if(!isMatch)
-    {
+    if (!isMatch) {
         const error = new Error('Invalid email or password');
         error.statusCode = 401;
         throw error;
@@ -49,24 +47,85 @@ const login = async({email,password})=>{
 
     await RefreshToken.create(
         {
-            token:refreshToken,
-            user:user._id,
-            expiresAt:new Date(Date.now()+7*24*60*60*1000),  // in ms time  
+            token: refreshToken,
+            user: user._id,
+            expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),  // in ms time  
         }
     );
 
     return {
         accessToken,
         refreshToken,
-        user:{
+        user: {
             id: user._id,
-            name : user.name,
-            email : user.email,
+            name: user.name,
+            email: user.email,
         },
 
     };
 };
 
 
+const refresh = async (refreshToken) => {
+ 
+    if (!refreshToken) {
+        const error = new Error('Refresh token required');
+        error.statusCode = 401;
+        throw error;
+    }
 
-module.exports = {signup,login};
+    //verify the token is cryptographically valid
+
+    let decoded;
+    try {
+        decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
+    }
+    catch (err) {
+        console.error('Refresh token verification failed:', err.message);
+        const error = new Error('Invalid or expired refresh token');
+        error.statusCode = 401;
+        throw error;
+    }
+
+    // verify  the token is not revocked from DB 
+
+    const storedToken = await RefreshToken.findOne({ token: refreshToken });
+    if (!storedToken) {
+
+        const error = new Error('Invalid token or expired token');
+        error.statusCode = 401;
+        throw error;
+
+    }
+
+
+    // rotation of token
+
+    await RefreshToken.deleteOne({ token: refreshToken });
+
+
+    // issue the new token
+
+    const newAccessToken = generateAccessToken(decoded.userId);
+    const newRefreshToken = generateRefreshToken(decoded.userId);
+
+    // store the new refresh Token
+
+    await RefreshToken.create({
+        token: newRefreshToken,
+        user: decoded.userId,
+        expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+    });
+
+
+    return { newAccessToken, newRefreshToken }
+
+
+
+
+
+}
+
+
+
+module.exports = { signup, login, refresh };

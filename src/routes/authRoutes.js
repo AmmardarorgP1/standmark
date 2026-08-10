@@ -10,6 +10,8 @@ router.post('/login',authController.login);
 
 router.get('/me',protect,authController.getMe);
 
+router.post('/refresh',authController.refresh);
+
 
 
 
