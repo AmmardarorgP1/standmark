@@ -52,10 +52,8 @@ const createTeam = async ({ name, workspaceId, userId }) => {
 
 const joinTeam = async ({ joinCode, userId }) => {
 
-    console.log('1. joinTeam entered. code:', joinCode, 'userId:', userId);
     const team = await Team.findOne({ joinCode: joinCode.toUpperCase() });
 
-    console.log('2. team found?', team ? 'yes' : 'no');
 
 
     if (!team) {
@@ -76,7 +74,6 @@ const joinTeam = async ({ joinCode, userId }) => {
             teamId: team._id
         });
 
-    console.log('3. existing membership?', existingMemberShip ? 'yes' : 'no');
 
 
     // double layer 
@@ -108,7 +105,6 @@ const joinTeam = async ({ joinCode, userId }) => {
         throw err;
     }
 
-console.log('4. membership created');
 
     return {
         id: team._id,
