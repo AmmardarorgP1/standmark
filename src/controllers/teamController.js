@@ -22,4 +22,25 @@ const createTeam = async (req, res, next) => {
 };
 
 
-module.exports = { createTeam };
+const joinTeam = async (req, res, next) => {
+    try {
+        const result = await teamService.joinTeam(
+            {
+                joinCode: req.body.joinCode,
+                userId: req.user.id
+            });
+
+        res.status(200).json({
+            success: true,
+            message: "Joined Team Successfully",
+            data: result
+        });
+    }
+    catch (error) {
+        next(error);
+    }
+
+};
+
+
+module.exports = { createTeam, joinTeam };
