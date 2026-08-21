@@ -43,4 +43,26 @@ const joinTeam = async (req, res, next) => {
 };
 
 
-module.exports = { createTeam, joinTeam };
+
+const listTeamMembers = async(req,res,next)=>
+{
+    try
+    {
+        const result = await teamService.listTeamMembers({
+            teamId: req.params.teamId,    // GET request so no req.body
+            userId: req.user.id,
+
+        });
+
+        res.status(200).json({
+            success:true,
+            data:{members:result}
+        });
+    }catch(error)
+    {
+        next(error);
+    }
+}
+
+
+module.exports = { createTeam, joinTeam, listTeamMembers };

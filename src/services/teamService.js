@@ -111,8 +111,36 @@ const joinTeam = async ({ joinCode, userId }) => {
         name: team.name
     }
 
-    
+
 }
 
 
-module.exports = { createTeam, joinTeam };
+
+
+const listTeamMembers = async ({ teamId, userId }) => {
+
+   
+
+    const memberShip = await TeamMember.findOne({ teamId, userId });
+
+    if (!memberShip) {
+        const error = new Error('You are not member of this team');
+        error.statusCode = 403;
+        throw error;
+    }
+
+    const members = await TeamMember.find({ teamId })
+        .populate('userId', 'name email jobTitle avatar')
+        .sort({ joinedAt: 1 });
+
+    return members.map((m) => ({
+        id: m._id,
+        role: m.role,
+        joinedAt: m.joinedAt,
+        user: m.userId
+    }));
+
+};
+
+
+module.exports = { createTeam, joinTeam, listTeamMembers };
